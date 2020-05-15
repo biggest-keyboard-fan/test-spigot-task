@@ -1,0 +1,8 @@
+name: Test_Spigot_Task
+version: ${project.version}
+main: com.example.plugin.TestSpigotTask
+api-version: 1.13
+commands:
+  quest:
+    description: Use the quest service
+    usage: "Usage: /<command> [add|info <index>]"
