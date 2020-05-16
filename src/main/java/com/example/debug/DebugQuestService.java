@@ -7,7 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DebugQuestService extends QuestService<TaskDataExample,QuestDataExample> {
-    public DebugQuestService(){
+    public static synchronized DebugQuestService getInstance(){
+        if(instance == null){
+            instance = new DebugQuestService();
+        }
+
+        return instance;
+    }
+    private static DebugQuestService instance;
+    private DebugQuestService(){
         System.out.print("DebugQuestService is initialized");
     }
     @Override

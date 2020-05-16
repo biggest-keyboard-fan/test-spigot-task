@@ -10,8 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public final class TestSpigotTask extends JavaPlugin {
@@ -36,7 +34,7 @@ public final class TestSpigotTask extends JavaPlugin {
                         questService.setNextTasks(tasks[1],tasks[3]);
                         questService.setNextTasks(tasks[2],tasks[4]);
 
-                        //Unlinear quest
+                        //non-linear quest
                         //(0 -> 1 ->
                         //         2 -> 4)
                         //         3 -> 5)
@@ -60,13 +58,11 @@ public final class TestSpigotTask extends JavaPlugin {
     }
     @Override
     public void onEnable() {
-        // Plugin startup logic
-        questService = new DebugQuestService();
+        questService = DebugQuestService.getInstance();
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
         questService.onShutdown();
     }
 }

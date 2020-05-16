@@ -8,15 +8,15 @@ import java.util.Collections;
 import java.util.List;
 
 //Хранит типы данных для заданий (T) и квестов (Q)
-//С помощью этого сервиса создаются, изменяются и сохраняются новые квесты, задания
+//С помощью этого сервиса создаются, изменяются и сохраняются новые квесты/задания
 public abstract class QuestService<T,Q> {
     protected abstract void saveQuests();
     protected abstract List<Quest<T,Q>> loadQuests() throws InvalidDataType;
+
+    protected QuestService(){ this.questList = Collections.unmodifiableList(loadQuests()); }
+
     public void onShutdown(){
         saveQuests();
-    }
-    public QuestService() throws InvalidDataType {
-        this.questList = Collections.unmodifiableList(loadQuests());
     }
 
     private List<Quest<T,Q>> questList; public List<Quest<T,Q>> getQuestList(){return questList;}
