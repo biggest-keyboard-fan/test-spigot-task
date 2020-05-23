@@ -10,7 +10,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class TestSpigotTask extends JavaPlugin {
     private DebugQuestService questService; public DebugQuestService getQuestService(){return questService;}
@@ -22,23 +24,23 @@ public final class TestSpigotTask extends JavaPlugin {
                     if(args.length > 0 && args[0].equals("add")){
                         Task[] tasks = new Task[5];
                         for (int i = 0; i < tasks.length; i++) {
-                            tasks[i] = questService.createNewTask(new TaskDataExample(50+i),"Linear"+i,"Description");
-                            if(i>0) questService.setNextTasks(tasks[i-1],tasks[i]);
+                            tasks[i] = new Task(new TaskDataExample(50+i), "Linear"+i,"Description");
+                            if(i>0) tasks[i].setNextTasks(tasks[i-1],tasks[i]);
                         }
                         //Linear quest (0 -> 1 -> 2 -> 3 -> 4 -> 5)
-                        Quest quest1 = questService.createNewQuest(new QuestDataExample("linear Quest"), tasks);
+                        Quest quest1 = new Quest(Arrays.asList(tasks), new QuestDataExample("linear Quest"));
                         tasks = new Task[5];
                         for (int i = 0; i < tasks.length; i++)
-                            tasks[i] = questService.createNewTask(new TaskDataExample(50+i*2),"Nonlinear"+i,"Description");
-                        questService.setNextTasks(tasks[0],tasks[1],tasks[2]);
-                        questService.setNextTasks(tasks[1],tasks[3]);
-                        questService.setNextTasks(tasks[2],tasks[4]);
+                            tasks[i] = new Task(new TaskDataExample(50+i*2),"Nonlinear"+i,"Description");
+                        tasks[0].setNextTasks(tasks[1],tasks[2]);
+                        tasks[1].setNextTasks(tasks[3]);
+                        tasks[2].setNextTasks(tasks[4]);
 
                         //non-linear quest
                         //(0 -> 1 ->
                         //         2 -> 4)
                         //         3 -> 5)
-                        Quest quest2 = questService.createNewQuest(new QuestDataExample("non-linear Quest"), tasks);
+                        Quest quest2 = new Quest(Arrays.asList(tasks), new QuestDataExample("non-linear Quest"));
                         questService.AddNewQuests(quest1,quest2);
 
                         System.out.print("Added two quests.");

@@ -13,29 +13,34 @@ public abstract class QuestService<T,Q> {
     protected abstract void saveQuests();
     protected abstract List<Quest<T,Q>> loadQuests() throws InvalidDataType;
 
-    protected QuestService(){ this.questList = Collections.unmodifiableList(loadQuests()); }
-
+    protected QuestService(){
+        List<Quest<T,Q>> questList = Collections.unmodifiableList(loadQuests());
+        Quest<T,Q> checkQuest = questList.size() > 0 ? questList.get(0) : null;
+        if(checkQuest != null) for (Quest<T,Q> quest:questList) checkQuestTypeMatch(quest,checkQuest);
+        this.questList = questList;
+    }
     public void onShutdown(){
         saveQuests();
     }
-
+    public void checkQuestTypeMatch(Quest<T,Q> a, Quest<T,Q> b){
+        Class ca = a.getData().getClass();
+        Object cb = b.getData();
+        if(!ca.isInstance(cb))
+            throw new InvalidDataType("Quest's "+ca.getName()+" doesn't match "+cb.getClass().getName()+" type.");
+        ca = a.getFirstTask().getData().getClass();
+        cb = b.getFirstTask().getData();
+        if(!ca.isInstance(cb))
+            throw new InvalidDataType("Quest's task data "+ca.getName()+" doesn't match "+cb.getClass().getName()+" data type.");
+    }
     private List<Quest<T,Q>> questList; public List<Quest<T,Q>> getQuestList(){return questList;}
     @SafeVarargs
-    public final void AddNewQuests(Quest<T,Q>... quests){
+    public final void AddNewQuests(Quest<T,Q>... quests) throws InvalidDataType{
         List<Quest<T,Q>> questList = new ArrayList<>(this.questList);
+        Quest<T,Q> checkQuest = questList.size() > 0 ? questList.get(0) : quests[0];
+        for (Quest<T,Q> quest:quests)
+            checkQuestTypeMatch(checkQuest,quest);
+
         questList.addAll(Arrays.asList(quests));
         this.questList = Collections.unmodifiableList(questList);
-    }
-    //https://stackoverflow.com/a/16381390
-    @SafeVarargs
-    public final Quest<T,Q> createNewQuest(Q data, Task<T>... tasks){
-        return new Quest<>(Arrays.asList(tasks),data);
-    }
-    public Task<T> createNewTask(T data, String name, String description){
-        return new Task<>(data, name, description);
-    }
-    @SafeVarargs
-    public final void setNextTasks(Task<T> task, Task<T>... nextTasks){
-        task.setNextTasks(nextTasks);
     }
 }

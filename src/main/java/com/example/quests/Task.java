@@ -1,5 +1,7 @@
 package com.example.quests;
 
+import com.example.exceptions.InvalidDataType;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,14 +13,17 @@ public class Task<T> {
     private String name; public String getName(){ return name; }
     private String description; public String getDescription(){ return description; }
     private List<Task<T>> nextTasks; public List<Task<T>> getNextTasks(){return nextTasks;}
-    protected Task(T data, String name, String description){
+    public Task(T data, String name, String description){
         this.data = data;
         this.name = name;
         this.description = description;
         nextTasks = Collections.unmodifiableList(new ArrayList<>());
     }
     @SafeVarargs
-    protected final void setNextTasks(Task<T>... nextTasks){
+    public final void setNextTasks(Task<T>... nextTasks){
+        for (Task<T> task:nextTasks)
+            if(!task.getData().getClass().isInstance(data))
+                throw new InvalidDataType("Task's data type "+task.getData().getClass().getName()+" doesn't match "+data.getClass().getName()+" type");
         this.nextTasks = Collections.unmodifiableList(Arrays.asList(nextTasks));
     }
 
